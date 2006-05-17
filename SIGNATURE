@@ -1,0 +1,58 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.54.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 b79bbdc2607e13352bbe4d4fb1b93cd681661f39 Build.PL
+SHA1 0b184ad51ba2a79e85d2288d5fcf8a1ea0481ea4 COPYING
+SHA1 72371f3217c31e8c92331c90cc2153a04f3b07bf INSTALL
+SHA1 510f4d4b7cbd78fbafb0119ced96edebbc1eab39 MANIFEST
+SHA1 7a31880f79f89b88096a7f1a8e77a1e0f4542179 MANIFEST.SKIP
+SHA1 5c8c440aa7ae7dd85a6a76c8298eb8366d46f8bb META.yml
+SHA1 a91939ef2efe9b9fe9bc7e3482a8be4df788f4d8 Makefile.PL
+SHA1 d2c3c3e43e00d51ddf6bcf6ec472eaad9ef9aee8 README
+SHA1 e28cf2d3ba35f6ca3a448acc7bee191b7c390379 inc/Module/Install.pm
+SHA1 e7c1c86f57b6778f4bdc7fd8c1b950e60ef41bc0 inc/Module/Install/Base.pm
+SHA1 cb9aba1d2d38aeced33c6d74e9175577f31af79c inc/Module/Install/Build.pm
+SHA1 e1829448769445cdaac384a888bf9ccf42e0d89a inc/Module/Install/Can.pm
+SHA1 70aa5e2055e8e38b4eecc5fc8c91762c0e97f551 inc/Module/Install/Fetch.pm
+SHA1 8d88f2cb120f2e64f374136df2e25d0bb6f0595b inc/Module/Install/Include.pm
+SHA1 8ac832baf4f9e8e72d3e8f103cee6e8a94ac80e1 inc/Module/Install/Makefile.pm
+SHA1 0807e79d6dbfda4fcd3db0fc7df2e33e0cba263b inc/Module/Install/Metadata.pm
+SHA1 4da0a1fce2339cc3f8c296c7716480d2564d9470 inc/Module/Install/Win32.pm
+SHA1 9a903a1d178954ad864c7dcc98f9fa5c005d1553 inc/Module/Install/WriteAll.pm
+SHA1 f0ebc594cf8ba858ee9a840c344d9b7ea2c3c6f4 inc/Test/Builder.pm
+SHA1 6bb30e9867f6dbcada80acca07cb727fa09fc3a0 inc/Test/Builder/Module.pm
+SHA1 07c750f370de7a44ee7b0ed9ec30a7e89c24c9b9 inc/Test/More.pm
+SHA1 b18d260d763a329eeb4ef4d30baaa1cb79490b10 lib/WWW/Blogger.pm
+SHA1 54629e5787e8e002258d8ad00c805251a47d3e91 lib/WWW/Blogger/HTML.pm
+SHA1 bf08508878366300a663ca367fc0d99f800c0079 lib/WWW/Blogger/HTML/API.pm
+SHA1 64bce01c3ac142481bec15e25f1dc30294408853 lib/WWW/Blogger/HTML/API.pm~
+SHA1 68e646d5f29de77fefc20e0916052baf5bfb7fd4 lib/WWW/Blogger/ML.pm
+SHA1 278aa4898585f9add5bf2ce5cba0ae1b3ed40b3a lib/WWW/Blogger/ML/API.pm
+SHA1 87e583e6b3bff0c4f79c18d6d974410d9f54cbe9 lib/WWW/Blogger/ML/API.pm~
+SHA1 382925ba1da22298fd980fa9044d3835d849099b lib/WWW/Blogger/XML.pm
+SHA1 f0a2466acc5c67044e005bc8f8b033c48666e48a lib/WWW/Blogger/XML/API.pm
+SHA1 7ada5458857d0f5b3b4a7d079150d8d7781d50ae lib/WWW/Blogger/XML/API.pm~
+SHA1 aaa5ae75f6e123869524eb3c2b1a3963c88924fb public_keys/ERMEYERS2005.pub
+SHA1 37e858c51409a297ef5d3fb35dc57cd3b57f9a4d public_keys/PAUSE2003.pub
+SHA1 8f9fa0f00546860b393746825af0832a571e043e t/test0.pl.t
+SHA1 16aefcee72dd01da9fd8743e71b6de7be6e6a4e9 t/use_me/test0.pl.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2.2 (GNU/Linux)
+
+iD8DBQFEan7LmYhyuYPOgKMRAjmjAJ0aILy8wc/XOTmcNUN7Sb9IOH4gqACfT/XW
+KpB4PEdv4XMQrjgLh4zZsGw=
+=Kjdv
+-----END PGP SIGNATURE-----

@@ -1,0 +1,30 @@
+---
+name: WWW-Blogger
+version: 2006.0516
+author:
+  - 'Eric R. Meyers <ermeyers@adelphia.net>'
+abstract: Interface to www.blogger.com
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
+build_requires:
+  Test::More: 0.34
+provides:
+  WWW::Blogger:
+    file: lib/WWW/Blogger.pm
+  WWW::Blogger::HTML:
+    file: lib/WWW/Blogger/HTML.pm
+  WWW::Blogger::HTML::API:
+    file: lib/WWW/Blogger/HTML/API.pm
+  WWW::Blogger::ML:
+    file: lib/WWW/Blogger/ML.pm
+  WWW::Blogger::ML::API:
+    file: lib/WWW/Blogger/ML/API.pm
+  WWW::Blogger::XML:
+    file: lib/WWW/Blogger/XML.pm
+  WWW::Blogger::XML::API:
+    file: lib/WWW/Blogger/XML/API.pm
+generated_by: Module::Build version 0.28
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
