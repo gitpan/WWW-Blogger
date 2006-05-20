@@ -11,23 +11,22 @@ use inc::Module::Install;
 
 require Date::Format;
 
-require File::Spec;
-
 require FindBin; chdir( $FindBin::Bin );
 
 ##require Getopt::Long;
 
 ##Getopt::Long::GetOptions();
 
-my @tests = glob File::Spec->catfile( 't', '*.pl.t' );
+##require File::Spec;
 
-push( @tests, glob File::Spec->catfile( 't', 'use_me', '*.pl.t' ) );
+##my @tests = glob File::Spec->catfile( 't', '*.pl.t' );
 
-requires( 'perl' => '5.005' );
+##push( @tests, glob File::Spec->catfile( 't', 'use_me', '*.pl.t' ) );
 
 my $param =
 {
-   'NAME'  => 'WWW-Blogger',
+   'NAME' => 'WWW-Blogger',
+   'CPANID' => 'ERMEYERS',
    'AUTHOR' => 'Eric R. Meyers <ermeyers@adelphia.net>',
    'VERSION' => Date::Format::time2str( '%Y.%m%d', time() ),
    'LICENSE' => 'perl',
@@ -36,15 +35,101 @@ my $param =
 };
 
 name( $param->{'NAME'} );
+
 author( $param->{'AUTHOR'} );
+
 version( $param->{'VERSION'} );
+
 license( $param->{'LICENSE'} );
+
 abstract( $param->{'ABSTRACT'} );
 
-##none##all_from( 'lib/WWW/Blogger.pm' );
+all_from( 'lib/WWW/Blogger.pm' );
 
-system( "$FindBin::Bin/_bin/create_www_blogger.plx $param->{'VERSION'}" ); ## sync
+unlink( "MANIFEST.bak" );
 
+unlink( "$param->{'NAME'}-$param->{'VERSION'}.tar.gz" );
+
+if ( -d "$FindBin::Bin/_bin" ) ## won't exist in distribution
+{
+   system( "$FindBin::Bin/_bin/create_www_blogger.plx $param->{'VERSION'}" );
+
+} ## end if
+
+requires
+(
+   'perl' => '5.005',
+   'HTTP::Cookies' => 0,
+   'LWP::UserAgent' => 0,
+
+);
+
+feature( 'Shell.pm', '-default' => 0, recommends( 'Shell' ) ) unless can_run( 'sh' );
+
+build_requires( 'Test::More' => 0.34 );
+
+auto_install( 'prerequisites_policy' => 'follow' );
+
+auto_include_deps();
+
+sign();
+
+WriteAll();
+
+locate_gpg();
+
+##
+## Thanks Audrey Tang
+##
+END {
+
+   print "##\n## Thanks to Mr. Audrey Tang, for being the first person to send me an encrypted email.\n##\n";
+
+   print "Now, please enter 'Build' to make all, 'Build test' to test, and 'Build install' to install.\n";
+
+} ## end END
+
+##
+## locate_gpg
+##
+sub locate_gpg
+{
+   print "*** Looking for GnuPG (GNU Privacy Guard, a cryptographic signature tool)...\n";
+
+   my $gpg = can_run( 'gpg' );
+
+   my $has_gpg = ( $gpg and `gpg --version` =~ /GnuPG/ and defined `gpg --list-public-keys` );
+
+   if ( $has_gpg )
+   {
+      print "GnuPG found ($gpg).\n";
+
+      return ( 1 ) if grep { /^--installdeps/ } @ARGV;
+
+      if ( prompt( "Import CPAN Author $param->{'CPANID'}'s public key to GnuPG?", 'n' ) =~ /^y/i )
+      {
+         print 'Importing public key to GnuPG ... ';
+
+         system 'gpg', '--quiet', '--import', glob('public_keys/'.$param->{'CPANID'}.'*.pub');
+
+         print "done.\n";
+
+      } ## end if
+
+      return ( 1 );
+
+   } ## end if
+
+   print 'GnugPG not found anywhere in your PATH, "eek," said Mr. Audrey Tang.'."\n";
+
+   return;
+
+} ## end sub
+
+##
+## make a sub
+##
+=cut
 my @missing;
 
 my @nice = qw( Test::Pod Test::Memory::Cycle Test::Warn Test::Taint );
@@ -72,69 +157,6 @@ The following are modules that would be nice to have, but are not required:
 EOT
 
 } ## end if
-
-locate_gpg();
-
-feature( 'Shell.pm', '-default' => 0, recommendsi( qw( Shell ) ) ) unless can_run( 'sh' );
-
-##auto_install( 'prerequisites_policy' => 'follow' );
-
-build_requires( 'Test::More' => 0.34 );
-
-auto_include_deps();
-
-sign();
-
-WriteAll();
-
-##
-## Thanks Audrey Tang
-##
-END {
-
-   print "##\n## Thanks to Mr. Audrey Tang, for being the first person to send me an encrypted email.\n##\n";
-
-   my $make = eval { require Config; $Config::Config{'make'} } || 'make';
-
-   print "Now, please enter 'Build' to make all, 'Build test' to test, and 'Build install' to install.\n";
-
-} ## end END
-
-##
-## locate_gpg
-##
-sub locate_gpg
-{
-   print "*** Looking for GnuPG (GNU Privacy Guard, a cryptographic signature tool)...\n";
-
-   my $gpg = can_run( 'gpg' );
-
-   my $has_gpg = ( $gpg and `gpg --version` =~ /GnuPG/ and defined `gpg --list-public-keys` );
-
-   if ( $has_gpg )
-   {
-      print "GnuPG found ($gpg).\n";
-
-      return ( 1 ) if grep { /^--installdeps/ } @ARGV;
-
-      if ( 1 || prompt( "Import PAUSE and author keys to GnuPG?", 'y' ) =~ /^y/i )
-      {
-         print 'Importing... ';
-
-         system 'gpg', '--quiet', '--import', glob('public_keys/*.pub');
-
-         print "done.\n";
-
-      } ## end if
-
-      return ( 1 );
-
-   } ## end if
-
-   print "GnugPG not found anywhere in your PATH, \"eek,\" (said Audrey Tang).\n";
-
-   return;
-
-} ## end sub
+=cut
 
 __END__
