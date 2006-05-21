@@ -1,17 +1,23 @@
 ---
 name: WWW-Blogger
-version: 2006.0519
+version: 2006.0520
 author:
   - 'Eric R. Meyers <ermeyers@adelphia.net>'
-abstract: Interface to www.blogger.com
+abstract: Interface to bundle modules
 license: perl
 resources:
   license: http://dev.perl.org/licenses/
 requires:
   HTTP::Cookies: 0
   LWP::UserAgent: 0
+  perl: 5.6.1
 build_requires:
-  Test::More: 0.34
+  Test::More: 0
+recommends:
+  Test::Memory::Cycle: 0
+  Test::Pod: 0
+  Test::Taint: 0
+  Test::Warn: 0
 provides:
   WWW::Blogger:
     file: lib/WWW/Blogger.pm

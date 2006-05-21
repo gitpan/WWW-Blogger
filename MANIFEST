@@ -1,4 +1,3 @@
-2006_MMDD
 Build.PL
 COPYING
 inc/Module/AutoInstall.pm
@@ -31,7 +30,6 @@ MANIFEST.SKIP
 META.yml
 public_keys/ERMEYERS2005.pub
 README
-SIGNATURE
 t/test0.pl.t
 t/use_me/test0.pl.t
 SIGNATURE    Added here by Module::Build
