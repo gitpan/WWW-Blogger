@@ -19,6 +19,4 @@ CVS/
 [.]tar$
 [.]tar[.]gz$
 [.]out$
-hide/
 ##local##
-^thisisatest.*/

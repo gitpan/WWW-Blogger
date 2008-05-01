@@ -17,7 +17,7 @@ my $param =
 {
    'NAME' => 'WWW-Blogger',
    'CPANID' => 'ERMEYERS',
-   'AUTHOR' => 'Eric R. Meyers <ermeyers@adelphia.net>',
+   'AUTHOR' => 'Eric R. Meyers <Eric.R.Meyers@gmail.com>',
    'VERSION' => Date::Format::time2str( '%Y.%m%d', time() ),
    'LICENSE' => 'perl',
    'ABSTRACT' => 'Interface to www.blogger.com',
@@ -120,11 +120,35 @@ sub gpg_me
 
       return ( 1 ) if grep { /^--installdeps/ } @ARGV;
 
-      if ( $build->prompt( "Import CPAN Author $param->{'CPANID'}'s public key into GnuPG?", 'n' ) =~ /^y/i )
+      my $prmt = "Import CPAN Author $param->{'CPANID'}'s public key into GnuPG?";
+
+      my $perm = 'n';
+
+      eval
+      {
+         local $SIG{'ALRM'} = sub { die( "alarm\n" ) };
+
+         alarm 30;
+
+         $perm = $build->prompt( $prmt, $perm );
+
+         alarm 0;
+
+      }; ## end eval
+
+      if ( $@ )
+      {
+         die( $@ ) unless ( $@ eq "alarm\n" );
+
+         print "\n";
+
+      } ## end if
+
+      if ( $perm =~ m/^y/i )
       {
          print 'Importing public key into GnuPG keyring... ';
 
-         system( 'gpg --quiet --import', glob('public_keys/'.$param->{'CPANID'}.'*.pub') );
+         system( 'gpg --quiet --import '. glob('public_keys/'.$param->{'CPANID'}.'*.pub') );
 
          print "done.\n";
 
@@ -139,3 +163,4 @@ sub gpg_me
    return ( 0 );
 
 } ## end sub gpg_me
+
