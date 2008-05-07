@@ -15,7 +15,7 @@ require Date::Format;
 #my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION = sprintf("%d.%04d", "Revision: 2008.0407" =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%04d", "Revision: 2008.0507" =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
