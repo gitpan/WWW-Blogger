@@ -11,14 +11,12 @@ require Config;
 
 require File::Spec;
 
-require Date::Format;
-
 my $param =
 {
    'NAME' => 'WWW-Blogger',
    'CPANID' => 'ERMEYERS',
    'AUTHOR' => 'Eric R. Meyers <Eric.R.Meyers@gmail.com>',
-   'VERSION' => Date::Format::time2str( '%Y.%m%d', time() ),
+   'VERSION' => '2008.0407',
    'LICENSE' => 'perl',
    'ABSTRACT' => 'Interface to www.blogger.com',
 
@@ -28,7 +26,7 @@ my $build = Module::Build->new
    (
       'dist_name' => $param->{'NAME'},
       'dist_author' => $param->{'AUTHOR'},
-      'dist_version' => Date::Format::time2str( '%Y.%m%d', time() ),
+      'dist_version' => $param->{'VERSION'},
       'license' => $param->{'LICENSE'},
       'dist_abstract' => $param->{'ABSTRACT'},
       'create_makefile_pl' => 'passthrough',
