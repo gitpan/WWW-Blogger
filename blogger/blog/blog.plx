@@ -9,19 +9,13 @@ use warnings;
 ##my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0507 $ =~ /(\d+)\.(\d+)/);
+our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0605 $ =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
    ##debug## push( @ARGV, '--xml_ua_dmp' );
    ##debug## push( @ARGV, '--xml_request_dmp' );
    ##debug## push( @ARGV, '--xml_result_dmp' );
-   ##debug## push( @ARGV, '--xml_tree_dmp' );
-
-   ##debug## push( @ARGV, '--html_ua_dmp' );
-   ##debug## push( @ARGV, '--html_request_dmp' );
-   ##debug## push( @ARGV, '--html_result_dmp' );
-   ##debug## push( @ARGV, '--html_tree_dmp' );
 
 } ## end BEGIN
 
@@ -62,7 +56,7 @@ pod2usage( '-exitstatus' => 0, '-verbose' => 2 ) if ( $man );
 ##debug## WWW::Blogger::HTML::show_all_opts();
 ##debug## WWW::Blogger::HTML::API::show_all_opts();
 
-WWW::Blogger::XML::API::demo();
+WWW::Blogger::XML::demo();
 
 END {
 
@@ -72,13 +66,13 @@ __END__
 
 =head1 NAME
 
-B<blogger/video/video.plx> - Blogger Developers Interface, XML-RPC API demo.
+B<blogger/blog/blog.plx> - Blogger Developers Interface, XML API demo.
 
 =head1 SYNOPSIS
 
 =over
 
-=item It's time for you to see the Blogger Developer API's page: L<http://www.blogger.com/dev>
+=item It's time for you to see the Blogger Developer API's page: L<http://code.google.com/apis/blogger>
 
 B<$ mkdir> ~/blogger
 
@@ -108,9 +102,7 @@ Prints the manual page and exits.
 
 =head1 DESCRIPTION
 
-Users/Videos data:
-
-Blogger XML-RPC API demo for initial testing, training and your own WWW::Blogger Development Environment setup purpose.
+Blogger XML API demo for initial testing, training and your own WWW::Blogger Development Environment setup purpose.
 
 =head1 SEE ALSO
 

@@ -11,7 +11,7 @@ use warnings;
 ##my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0507 $ =~ /(\d+)\.(\d+)/);
+our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0605 $ =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -34,11 +34,7 @@ __PACKAGE__ =~ m/^(WWW::[^:]+)::([^:]+)(::([^:]+)){0,1}$/;
 
 ##debug## exit;
 
-require DBI;
-
-require XML::Dumper;
-
-##require SQL::Statement;
+require FindBin;
 
 %WWW::Blogger::ML::API::opts =
 (
@@ -56,25 +52,17 @@ require XML::Dumper;
    'export_ok'      => [],
    'opts_type_flag' =>
    [
-      ##
-      ## @{$WWW::Blogger::ML::API::opts_type_args{'opts_type_flag'}},
-      ##
       'ua_dmp',
       'request_dmp',
       'result_dmp',
-      'tree_dmp',
-      ## Customizations follow this line ##
    ],
    'opts_type_numeric' =>
    [
       'max_try'
-      ## Customizations follow this line ##
 
    ],
    'opts_type_string' =>
    [
-      'dbm_dir',
-      ## Customizations follow this line ##
    ],
 
 ); ## this does the work with opts and optype_flag(s)
@@ -89,7 +77,6 @@ die( __PACKAGE__ ) if (
 ##debug####don't##WWW::Blogger::ML::API::create_opts_types( \%WWW::Blogger::ML::API::opts_type_args );
 
 $WWW::Blogger::ML::API::numeric_max_try = 5;
-$WWW::Blogger::ML::API::string_dbm_dir = "$ENV{'HOME'}/blogger/dbm/ml";
 
 ##debug####don't##WWW::Blogger::ML::register_all_opts( \%WWW::Blogger::ML::API::opts_type_args );
 
@@ -352,13 +339,7 @@ WWW::Blogger::ML::API - How to Interface with Blogger in general.
 
 =head1 SYNOPSIS
 
- Options;
-
-   --ml_api_*
-
 =head1 OPTIONS
-
---ml_api_*
 
 =head1 DESCRIPTION
 
@@ -366,7 +347,7 @@ ML::API stands for Generic Markup Language -- Application Programming Interface
 
 =head1 SEE ALSO
 
-I<L<WWW::Blogger>> I<L<WWW::Blogger::ML>> I<L<WWW::Blogger::HTML::API>> I<L<WWW::Blogger::XML::API>>
+I<L<WWW::Blogger>> I<L<WWW::Blogger::ML>> I<L<WWW::Blogger::XML::API>>
 
 =head1 AUTHOR
 

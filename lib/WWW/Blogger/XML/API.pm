@@ -11,7 +11,7 @@ use warnings;
 #my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0507 $ =~ /(\d+)\.(\d+)/);
+our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0605 $ =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -31,25 +31,13 @@ require Net::Google::GData;
 
 require WWW::Blogger::Com; ## NOTE: I need WWW::Google secrets
 
-require WWW::Blogger::HTML::API; ## NOTE: HTML/XML crossover
-
 require WWW::Blogger::ML::API; ## NOTE: generic *ML
 
-require XML::TreeBuilder; ## XML::API::tree parser
-
-require XML::Dumper;
-
-require XML::Atom::Syndication::Entry;
-require XML::Atom::Syndication::Text;
-require XML::Atom::Syndication::Content; 
-require XML::Atom::Syndication::Person; 
+require LWP::UserAgent; ## XML::API::ua (User Agent)
 
 require Data::Dumper; ## get rid of this
 
 require IO::File;
-
-##debug##require FindBin;
-##debug##require Cwd;
 
 require Date::Format;
 
@@ -71,17 +59,14 @@ __PACKAGE__ =~ m/^(WWW::[^:]+)::([^:]+)(::([^:]+)){0,1}$/;
    'opts_type_flag' =>
    [
       @{$WWW::Blogger::ML::API::opts_type_args{'opts_type_flag'}},
-      ## Customizations follow this line ##
    ],
    'opts_type_numeric' =>
    [
       @{$WWW::Blogger::ML::API::opts_type_args{'opts_type_numeric'}},
-      ## Customizations follow this line ##
    ],
    'opts_type_string' =>
    [
       @{$WWW::Blogger::ML::API::opts_type_args{'opts_type_string'}},
-      ## Customizations follow this line ##
    ],
 
 ); ## this does the work with opts and optype_flag(s)
@@ -96,7 +81,6 @@ die( __PACKAGE__ ) if (
 WWW::Blogger::ML::API::create_opts_types( \%WWW::Blogger::XML::API::opts_type_args );
 
 $WWW::Blogger::XML::API::numeric_max_try = $WWW::Blogger::ML::API::numeric_max_try;
-$WWW::Blogger::XML::API::string_dbm_dir = $WWW::Blogger::ML::API::string_dbm_dir.'/xml';
 
 ##debug##$WWW::Blogger::XML::API::numeric_max_try++;
 ##debug##printf( STDERR "WWW::Blogger::XML::API::numeric_max_try=%d\n", $WWW::Blogger::XML::API::numeric_max_try );
@@ -126,9 +110,7 @@ push( @WWW::Blogger::XML::API::EXPORT_OK,
 ## NOTE: Getopts hasn't set the options yet. (all flags = 0 right now)
 ##
 
-$WWW::Blogger::XML::API::ua = undef; ## goto qw(ua_request) function
-
-$WWW::Blogger::XML::API::tree = undef;
+$WWW::Blogger::XML::API::ua = LWP::UserAgent->new();
 
 $WWW::Blogger::XML::API::gdi = Net::Google::GData->new(
                                                           'service' => 'blogger',
@@ -209,39 +191,41 @@ sub WWW::Blogger::XML::API::result_dumper
 } ## end sub WWW::Blogger::XML::API::result_dumper
 
 ##
-## WWW::Blogger::XML::API::tree_dumper
-##
-sub WWW::Blogger::XML::API::tree_dumper
-{
-   my $tree = shift;
-
-   my $ima = 'tree'; ## dumper
-
-   my $filename = $WWW::Blogger::XML::API::opts_type_args{'opts_filename'}{"${ima}_dmp"};
-
-   my $fh = IO::File->new();
-
-   $fh->open( "+>${filename}.txt" ) ||
-   die "opening: ${filename}.txt: $!\n";
-
-   $fh->print( Data::Dumper->Dump( [ $tree ], [ $ima ] ) );
-
-   $fh->close();
-
-} ## end sub WWW::Blogger::XML::API::tree_dumper
-
-##
 ## WWW::Blogger::XML::API::ua_request
 ##
 sub WWW::Blogger::XML::API::ua_request
 {
    my $request = shift;
 
+   my $result = undef;
+
    $request->header( 'Authorization' => 'GoogleLogin auth=' . $WWW::Blogger::XML::API::gdi->_auth() );
+
+   my $ua_info = 'sprintf( "WWW::Blogger::XML::API::ua_request failed: %s \$itry=%dof%d\n",
+                            $result->status_line(), $itry-1, $max_try
+                         )';
+
+   my ( $itry, $max_try ) = ( 1, $WWW::Blogger::XML::API::numeric_max_try );
+
+   while ( $itry++ <= $max_try )
+   {
+      $result = $WWW::Blogger::XML::API::ua->request( $request );
+
+      last if ( $result->is_success() );
+
+      print( STDERR eval( $ua_info ) ) if ( $itry > $max_try );
+
+   } ## end while
 
    WWW::Blogger::XML::API::request_dumper( $request ) if ( $WWW::Blogger::XML::API::flag_request_dmp );
 
-   my $result = WWW::Blogger::HTML::API::ua_request( $request );
+   if ( $WWW::Blogger::XML::API::flag_ua_dmp )
+   {
+      printf( STDERR "---- request ----\n%s\n", $request->as_string() );
+
+      printf( STDERR "---- result  ----\n%s\n", $result->as_string() );
+
+   } ## end if
 
    if ( ! $result->is_success() )
    {
@@ -301,63 +285,6 @@ sub WWW::Blogger::XML::API::ua_request
 ##(get)       rel="self" type="application/atom+xml"></link>
 
 ##
-## WWW::Blogger::XML::API::demo
-##
-sub WWW::Blogger::XML::API::demo
-{
-   my $request = undef;
-
-   my $result = undef;
-
-   my $xml_tree = undef;
-
-   my $blogid = undef;
-
-   $request = WWW::Blogger::XML::API::list_of_blogs_by_userid( 'default' );
-
-   $result = WWW::Blogger::XML::API::ua_request( $request );
-
-   if ( $result->is_success() )
-   {
-      $blogid = WWW::Blogger::XML::API::parse_list_of_blogs( $result );
-
-   } ## end if
-
-   WWW::Blogger::XML::API::clear_test_posts_by_blogid( $blogid );
-
-   $request = WWW::Blogger::XML::API::test_post_by_blogid( $blogid );
-
-   $result = WWW::Blogger::XML::API::ua_request( $request );
-
-   if ( $result->is_success() )
-   {
-      WWW::Blogger::XML::API::parse_test_post_entry( $result );
-
-   }
-   else
-   {
-      print $result->as_string() . "\nFAILURE\n";
-
-   } ## end if
-
-   $request = WWW::Blogger::XML::API::list_of_posts_by_blogid( $blogid );
-
-   $result = WWW::Blogger::XML::API::ua_request( $request );
-
-   if ( $result->is_success() )
-   {
-      WWW::Blogger::XML::API::parse_list_of_posts( $result );
-
-   }
-   else
-   {
-      print $result->as_string() . "\nFAILURE\n";
-
-   } ## end if
-
-} ## end sub WWW::Blogger::XML::API::demo
-
-##
 ## Retrieving a list of blogs
 ## GET http://www.blogger.com/feeds/userID/blogs
 ##
@@ -374,161 +301,6 @@ sub WWW::Blogger::XML::API::list_of_blogs_by_userid
    return( $request );
 
 } ## end sub WWW::Blogger::XML::API::list_of_blogs_by_userid
-
-##
-## parse_list_of_blogs
-##
-sub WWW::Blogger::XML::API::parse_list_of_blogs
-{
-   my $result = shift;
-
-   my $blogid = undef; ## returning for demonstration purposes
-
-   my $xml_tree = XML::TreeBuilder->new(); 
-
-   $xml_tree->parse( $result->content() );
-
-   $xml_tree->eof();
-
-   if ( $xml_tree->{'_tag'} eq 'feed' )
-   {
-      WWW::Blogger::XML::API::tree_dumper( $xml_tree ) if ( $WWW::Blogger::XML::API::flag_tree_dmp );
-
-      foreach my $xml_entry ( $xml_tree->find_by_tag_name('entry') ) ## blog entries
-      {
-         my $xml_id = $xml_entry->find_by_tag_name( 'id' );
-
-         $xml_id->content()->[ 0 ] =~ m/[:]user[-](\d+)[.]blog[-](\d+)/;
-
-         $blogid = $2 if ( ! defined( $blogid ) ); ## returning first for demonstration purposes
-
-         ##debug##
-         printf( "user=%s\tblogid=%s\n", $1, $2 );
-
-         my $xml_title = $xml_entry->find_by_tag_name( 'title' );
-
-         ##debug##
-         printf( "title=%s\n", $xml_title->content()->[ 0 ] );
-
-         foreach my $xml_link ( $xml_entry->find_by_tag_name( 'link' ) )
-         {
-            if ( $xml_link->attr( 'rel' ) eq 'alternate' )
-            {
-               ##debug##
-               print "ALTERNATE " . $xml_link->attr( 'href' ) . "\n";
-
-            }
-            elsif ( $xml_link->attr( 'rel' ) eq 'http://schemas.google.com/g/2005#feed' )
-            {
-               ##debug##
-               print "FEED      " . $xml_link->attr( 'href' ) . "\n";
-
-            }
-            elsif ( $xml_link->attr( 'rel' ) eq 'http://schemas.google.com/g/2005#post' )
-            {
-               ##debug##
-               print "POST      " . $xml_link->attr( 'href' ) . "\n";
-
-            }
-            elsif ( $xml_link->attr( 'rel' ) eq 'self' )
-            {
-               ##debug##
-               print "SELF      " . $xml_link->attr( 'href' ) . "\n";
-
-            } ## end if
-
-         } ## end foreach
-
-      } ## end foreach
-
-   } ## end if
-
-   $xml_tree->delete();
-
-   return( $blogid );
-
-} ## end sub WWW::Blogger::XML::API::parse_list_of_blogs
-
-##
-## Publishing a blog post
-##
-## To publish this entry, send it to the blog's post URL as follows.
-## First, place your Atom <entry> element in the body of a new POST request,
-## using the application/atom+xml content type. Then find the blog's post URL
-## in the metafeed by locating the <link> element where the rel attribute ends
-## with #post. The blog's post URL is given as the href attribute of this
-## element, which is in this format:
-##
-## http://www.blogger.com/feeds/blogID/posts/default
-##
-sub WWW::Blogger::XML::API::test_post_by_blogid
-{
-   my $blogid = shift;
-
-   my $entry = XML::Atom::Syndication::Entry->new();
-
-   my $title = XML::Atom::Syndication::Text->new( Name => 'title' );
-
-   $title->body( 'Test Post' );
-
-   my $content = XML::Atom::Syndication::Content->new( 'Type' => 'text',
-                                                       'Body' => 'This is a test post.');
-
-   my $author = XML::Atom::Syndication::Person->new( Name => 'author' );
-
-   $author->name('Eric R. Meyers');
-
-   $author->email('Eric.R.Meyers@gmail.com');
-
-   ##
-   ## Entry
-   ##
-   $entry->title($title);
-
-   $entry->content($content);
-
-   $entry->author($author);
-
-   ##
-   ## Request
-   ##
-
-   my $request = WWW::Blogger::XML::API::post_entry_by_blogid( $blogid, $entry );
-
-   return( $request );
-
-} ## end sub WWW::Blogger::XML::API::test_post_by_blogid
-
-##
-## parse_test_post_entry
-##
-sub WWW::Blogger::XML::API::parse_test_post_entry
-{
-   my $result = shift;
-
-   my $xml_tree = XML::TreeBuilder->new(); 
-
-   $xml_tree->parse( $result->content() );
-
-   $xml_tree->eof();
-
-   my $xml_entry = $xml_tree->find_by_tag_name( 'entry' );
-
-   my $xml_id = $xml_entry->find_by_tag_name( 'id' );
-
-   $xml_id->content()->[ 0 ] =~ m/[:]blog[-](\d+)[.]post[-](\d+)/;
-
-   ##
-   ## Test Comments
-   ##
-   my $request = WWW::Blogger::XML::API::test_comment_by_blogid_postid( $1, $2 );
-
-   $result = WWW::Blogger::XML::API::ua_request( $request ); #1
-   $result = WWW::Blogger::XML::API::ua_request( $request ); #2
-
-   $xml_tree->delete();
-
-} ## end sub WWW::Blogger::XML::API::parse_test_post_entry
 
 ##
 ## Retrieving all blog posts
@@ -553,74 +325,6 @@ sub WWW::Blogger::XML::API::list_of_posts_by_blogid
    return( $request );
 
 } ## end sub WWW::Blogger::XML::API::list_of_posts_by_blogid
-
-##
-## parse_list_of_posts
-##
-sub WWW::Blogger::XML::API::parse_list_of_posts
-{
-   my $result = shift;
-
-   my $xml_tree = XML::TreeBuilder->new(); 
-
-   $xml_tree->parse( $result->content() );
-
-   $xml_tree->eof();
-
-   if ( $xml_tree->{'_tag'} eq 'feed' )
-   {
-      WWW::Blogger::XML::API::tree_dumper( $xml_tree ) if ( $WWW::Blogger::XML::API::flag_tree_dmp );
-
-      foreach my $xml_entry ( $xml_tree->find_by_tag_name( 'entry' ) )
-      {
-         my $xml_id = $xml_entry->find_by_tag_name( 'id' );
-
-         $xml_id->content()->[ 0 ] =~ m/[:]blog[-](\d+)[.]post[-](\d+)/;
-
-         ##debug##
-         printf( "blogid=%s\tpostid=%s\n", $1, $2 );
-
-         my $xml_title = $xml_entry->find_by_tag_name( 'title' );
-
-         ##debug##
-         printf( "title=%s\n", $xml_title->content()->[ 0 ] );
-
-         foreach my $xml_link ( $xml_entry->find_by_tag_name( 'link' ) )
-         {
-            if ( $xml_link->attr( 'rel' ) eq 'alternate' )
-            {
-               ##debug##
-               print "ALTERNATE " . $xml_link->attr( 'href' ) . "\n";
-
-            }
-            elsif ( $xml_link->attr( 'rel' ) eq 'edit' )
-            {
-               ##debug##
-               print "EDIT      " . $xml_link->attr( 'href' ) . "\n";
-
-            }
-            elsif ( $xml_link->attr( 'rel' ) eq 'replies' )
-            {
-               ##debug##
-               print "REPLIES   " . $xml_link->attr( 'href' ) . "\n";
-
-            }
-            elsif ( $xml_link->attr( 'rel' ) eq 'self' )
-            {
-               ##debug##
-               print "SELF      " . $xml_link->attr( 'href' ) . "\n";
-
-            } ## end if
-
-         } ## end foreach
-
-      } ## end foreach
-
-   } ## end if
-
-   $xml_tree->delete();
-
-} ## end sub WWW::Blogger::XML::API::parse_list_of_posts
 
 ##
 ## Creating a post entry
@@ -750,46 +454,6 @@ sub WWW::Blogger::XML::API::comment_entry_by_blogid_postid
 } ## end sub WWW::Blogger::XML::API::comment_entry_by_blogid
 
 ##
-## Test comment
-##
-sub WWW::Blogger::XML::API::test_comment_by_blogid_postid
-{
-   my ( $blogid, $postid ) = @_;
-
-   my $entry = XML::Atom::Syndication::Entry->new();
-
-   my $title = XML::Atom::Syndication::Text->new( Name => 'title' );
-
-   $title->body( 'Test Comment' );
-
-   my $content = XML::Atom::Syndication::Content->new( 'Type' => 'text',
-                                                       'Body' => 'This is a test comment.');
-
-   my $author = XML::Atom::Syndication::Person->new( Name => 'author' );
-
-   $author->name('Eric R. Meyers');
-
-   $author->email('Eric.R.Meyers@gmail.com');
-
-   ##
-   ## Entry
-   ##
-   $entry->title($title);
-
-   $entry->content($content);
-
-   $entry->author($author);
-
-   ##
-   ## Request
-   ##
-   my $request = WWW::Blogger::XML::API::comment_entry_by_blogid_postid( $blogid, $postid, $entry );
-
-   return( $request );
-
-} ## end sub WWW::Blogger::XML::API::test_comment_by_blogid_postid
-
-##
 ## Retrieving all comments for a blog
 ##
 ## GET http://www.blogger.com/feeds/blogID/comments/default
@@ -866,100 +530,50 @@ sub WWW::Blogger::XML::API::remove_comment_by_blogid_postid_commentid
 } ## end sub WWW::Blogger::XML::API::remove_comment_by_blogid_postid_commentid
 
 ##
-## clear test post of all test comments
+## Browsing with categories and keywords
+## GET http://www.blogger.com/feeds/blogID/posts/default/-/categories_or_keywords
 ##
-sub WWW::Blogger::XML::API::clear_test_comments_by_blogid_postid
+sub WWW::Blogger::XML::API::browse_by_blogid
 {
-   my ( $blogid, $postid ) = @_;
+   my ( $blogid, $query ) = @_;
 
-   my $request = WWW::Blogger::XML::API::list_of_comments_by_blogid_postid( $blogid, $postid );
+   my $request = HTTP::Request->new();
 
-   my $result = WWW::Blogger::XML::API::ua_request( $request );
+   $request->method( 'GET' );
 
-   if ( $result->is_success() )
+   if ( ! ( $query =~ m@^[/]@ ) )
    {
-      my $xml_tree = XML::TreeBuilder->new(); 
-
-      $xml_tree->parse( $result->content() );
-
-      $xml_tree->eof();
-
-      if ( $xml_tree->{'_tag'} eq 'feed' )
-      {
-         foreach my $xml_entry ( $xml_tree->find_by_tag_name( 'entry' ) ) ## comment entries
-         {
-            my $xml_content = $xml_entry->find_by_tag_name( 'content' );
-
-            next if ( $xml_content->content()->[ 0 ] ne 'This is a test comment.' );
-
-            my $xml_id = $xml_entry->find_by_tag_name( 'id' );
-
-            $xml_id->content()->[ 0 ] =~ m/[:]blog[-](\d+)[.]post[-](\d+)/; ## commentid
-
-            my $commentid = $2;
-
-            $request = WWW::Blogger::XML::API::remove_comment_by_blogid_postid_commentid( $blogid, $postid, $commentid );
-
-            $result = WWW::Blogger::XML::API::ua_request( $request );
-
-         } ## end foreach
-
-      } ## end if
-
-      $xml_tree->delete();
+      $query = '/' . $query;
 
    } ## end if
 
-} ## end sub WWW::Blogger::XML::API::clear_test_comments_by_blogid_postid
+   $request->uri( $WWW::YouTube::XML::API::url . "/feeds/${blogid}/posts/default/-$query" );
+
+   return( $request );
+
+} ## end sub WWW::Blogger::XML::API::browse_by_blogid
 
 ##
-## clear test blog of all test posts
+## Searching for a blog's posts using query parameters
+## GET http://www.blogger.com/feeds/blogID/posts/default?query_parameters
 ##
-sub WWW::Blogger::XML::API::clear_test_posts_by_blogid
+sub WWW::Blogger::XML::API::search_by_blogid
 {
-   my $blogid = shift;
+   my ( $blogid, @query ) = @_;
 
-   my $request = WWW::Blogger::XML::API::list_of_posts_by_blogid( $blogid );
+   my $request = HTTP::Request->new();
 
-   my $result = WWW::Blogger::XML::API::ua_request( $request );
+   my $uri = URI->new( $WWW::YouTube::XML::API::url . '/feeds/${blogid}/posts/default' );
 
-   if ( $result->is_success() )
-   {
-      my $xml_tree = XML::TreeBuilder->new(); 
+   $uri->query_form( @query );
 
-      $xml_tree->parse( $result->content() );
+   $request->method( 'GET' );
 
-      $xml_tree->eof();
+   $request->uri( $uri );
 
-      if ( $xml_tree->{'_tag'} eq 'feed' )
-      {
-         foreach my $xml_entry ( $xml_tree->find_by_tag_name( 'entry' ) ) ## post entries
-         {
-            my $xml_title = $xml_entry->find_by_tag_name( 'title' );
+   return( $request );
 
-            next if ( $xml_title->content()->[ 0 ] ne 'Test Post' );
-
-            my $xml_id = $xml_entry->find_by_tag_name( 'id' );
-
-            $xml_id->content()->[ 0 ] =~ m/[:]blog[-](\d+)[.]post[-](\d+)/; ## postid
-
-            my $postid = $2;
-
-            WWW::Blogger::XML::API::clear_test_comments_by_blogid_postid( $blogid, $postid );
-
-            $request = WWW::Blogger::XML::API::remove_post_by_blogid_postid( $blogid, $postid );
-
-            $result = WWW::Blogger::XML::API::ua_request( $request );
-
-         } ## end foreach
-
-      } ## end if
-
-      $xml_tree->delete();
-
-   } ## end if
-
-} ## end sub WWW::Blogger::XML::API::clear_test_posts_by_blogid
+} ## end sub WWW::Blogger::XML::API::search_by_blogid
 
 1;
 __END__ ## package WWW::Blogger::XML::API
@@ -980,7 +594,17 @@ http://code.google.com/apis/blogger/developers_guide_protocol.html
 
 =head1 OPTIONS
 
---xml_api_*
+=item --xml_ua_dmp
+
+user agent transaction dump
+
+=item --xml_request_dmp
+
+transaction request dump
+
+=item --xml_result_dmp
+
+transaction result dump
 
 =head1 DESCRIPTION
 
@@ -995,7 +619,7 @@ See:	http://code.blogger.com
 
 =over
 
-WWW::Blogger::XML::API::demo()
+WWW::Blogger::XML::demo()
 
 =back
 
@@ -1007,7 +631,7 @@ $request = WWW::Blogger::XML::API::list_of_blogs_by_userid( $userid );
 
 $result = WWW::Blogger::XML::API::ua_request( $request );
 
-See Example: WWW::Blogger::XML::API::parse_list_of_blogs( $result )
+See Example: WWW::Blogger::XML::parse_list_of_blogs( $result )
 
 =back
 
@@ -1017,7 +641,7 @@ See Example: WWW::Blogger::XML::API::parse_list_of_blogs( $result )
 
 =over
 
-$request = WWW::Blogger::XML::API::test_post_by_blogid( $blogid ) ## a Test Post
+$request = WWW::Blogger::XML::test_post_by_blogid( $blogid ) ## a Test Post
 
 -OR-
 
@@ -1027,7 +651,7 @@ $result = WWW::Blogger::XML::API::ua_request( $request );
 
 Follow the "Test Post" example to create your XML::Atom::Syndication::Entry.
 
-See Example: WWW::Blogger::XML::API::parse_test_post_entry( $result );
+See Example: WWW::Blogger::XML::parse_test_post_entry( $result );
 
 =back
 
@@ -1055,7 +679,15 @@ $result = WWW::Blogger::XML::API::ua_request( $request );
 
 =over
 
-TBD
+$request = WWW::Blogger::XML::API::browse_by_blogid( $blogid, '/Comedy/-dark' );
+
+-OR-
+
+$request = WWW::Blogger::XML::API::search_by_blogid( $blogid, 'start-index' => 1, 'max-results' => 10 );
+
+$result = WWW::Blogger::XML::API::ua_request( $request );
+
+See: http://code.google.com/apis/blogger/developers_guide_protocol.html#RetrievingWithQuery
 
 =back
 
@@ -1091,7 +723,7 @@ $result = WWW::Blogger::XML::API::ua_request( $request );
 
 =over
 
-$request = WWW::Blogger::XML::API::test_comment_by_blogid_postid( $blogid, $postid );
+$request = WWW::Blogger::XML::test_comment_by_blogid_postid( $blogid, $postid );
 
 -OR-
 
@@ -1129,7 +761,7 @@ $result = WWW::Blogger::XML::API::ua_request( $request );
 
 =head1 SEE ALSO
 
-I<L<WWW::Blogger>> I<L<WWW::Blogger::ML::API>> I<L<WWW::Blogger::HTML::API>> I<L<WWW::Blogger::XML>>
+I<L<WWW::Blogger>> I<L<WWW::Blogger::ML::API>> I<L<WWW::Blogger::XML>>
 
 =head1 AUTHOR
 

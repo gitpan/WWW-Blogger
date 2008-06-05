@@ -1,6 +1,6 @@
 ---
 name: WWW-Blogger
-version: 2008.0507
+version: 2008.0605
 author:
   - 'Eric R. Meyers <Eric.R.Meyers@gmail.com>'
 abstract: Interface to www.blogger.com
@@ -21,28 +21,22 @@ recommends:
 provides:
   WWW::Blogger:
     file: lib/WWW/Blogger.pm
-    version: 2008.0507
+    version: 2008.0605
   WWW::Blogger::Com:
     file: lib/WWW/Blogger/Com.pm
-    version: 2008.0507
-  WWW::Blogger::HTML:
-    file: lib/WWW/Blogger/HTML.pm
-    version: 2008.0507
-  WWW::Blogger::HTML::API:
-    file: lib/WWW/Blogger/HTML/API.pm
-    version: 2008.0507
+    version: 2008.0605
   WWW::Blogger::ML:
     file: lib/WWW/Blogger/ML.pm
-    version: 2008.0507
+    version: 2008.0605
   WWW::Blogger::ML::API:
     file: lib/WWW/Blogger/ML/API.pm
-    version: 2008.0507
+    version: 2008.0605
   WWW::Blogger::XML:
     file: lib/WWW/Blogger/XML.pm
-    version: 2008.0507
+    version: 2008.0605
   WWW::Blogger::XML::API:
     file: lib/WWW/Blogger/XML/API.pm
-    version: 2008.0507
+    version: 2008.0605
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

@@ -7,15 +7,11 @@ use strict;
 
 use warnings;
 
-use 5.005;
-
-require Date::Format;
-
 #program version
 #my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION = sprintf("%d.%04d", "Revision: 2008.0507" =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%04d", "Revision: 2008.0605" =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -35,6 +31,8 @@ BEGIN {
 require WWW::Blogger::ML;
 
 require File::Basename;
+
+require Date::Format;
 
 %WWW::Blogger::opts =
 (
@@ -131,15 +129,9 @@ B<WWW::Blogger> - Blogger Development Interface (BDI)
 
 B<use lib ( $ENV{'HOME'} );>
 
-B<use WWW::Blogger::Com;> ## SEE DESCRIPTION
-
- Options;
-
-   --bl_*
+B<use WWW::Blogger;>
 
 =head1 OPTIONS
-
---bl_*
 
 =head1 DESCRIPTION
 
@@ -151,7 +143,7 @@ We need your private B<user and pass> defined here.
 
 =head1 SEE ALSO
 
-I<L<WWW::Blogger::Com>> I<L<WWW::Blogger::ML>> I<L<WWW::Blogger::XML>> I<L<WWW::Blogger::HTML>>
+I<L<WWW::Blogger::Com>> I<L<WWW::Blogger::ML>> I<L<WWW::Blogger::XML>>
 
 =head1 AUTHOR
 

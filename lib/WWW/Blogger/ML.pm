@@ -14,7 +14,7 @@ use warnings;
 #my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0507 $ =~ /(\d+)\.(\d+)/);
+our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0605 $ =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -32,18 +32,8 @@ BEGIN {
 
 require WWW::Blogger::XML;
 
-require WWW::Blogger::HTML;
-
-##bad##require Term::UI;
-
-require Term::ReadLine;
-
 %WWW::Blogger::ML::opts =
 (
-   ##
-   ## vlbt_opts
-   ##
-
 ); ## General Public
 
 __PACKAGE__ =~ m/^(WWW::[^:]+)((::([^:]+)){1}(::([^:]+)){0,1}){0,1}$/g;
@@ -93,8 +83,6 @@ $WWW::Blogger::ML::numeric_delay_sec = 5; ## pacing
 
 WWW::Blogger::ML::register_all_opts( \%WWW::Blogger::XML::opts_type_args );
 
-WWW::Blogger::ML::register_all_opts( \%WWW::Blogger::HTML::opts_type_args );
-
 push( @WWW::Blogger::ML::EXPORT_OK,
       @{$WWW::Blogger::ML::opts_type_args{'export_ok'}} );
 
@@ -143,21 +131,29 @@ WWW::Blogger::ML - WWW::Blogger Markup Language, an Abstraction Layer
 
 =head1 SYNOPSIS
 
- Options;
-
-   --ml_*
-
 =head1 OPTIONS
 
---ml_*
+--ml_* options:
+
+opts_type_flag:
+
+   NONE
+
+opts_type_numeric:
+
+   --ml_delay_sec=number
+
+opts_type_string:
+
+   NONE
 
 =head1 DESCRIPTION
 
-ML just stands for Markup Language, in a Abstract way, for HTML, XML, SGML or YAML or whatever gets included as ML capabilities.
+ML just stands for Markup Language, in a Abstract way, for HTML, XML, or whatever gets included as ML capabilities.
 
 =head1 SEE ALSO
 
-I<L<WWW::Blogger>> I<L<WWW::Blogger::ML::API>> I<L<WWW::Blogger::HTML>> I<L<WWW::Blogger::XML>>
+I<L<WWW::Blogger>> I<L<WWW::Blogger::ML::API>> I<L<WWW::Blogger::XML>>
 
 =head1 AUTHOR
 

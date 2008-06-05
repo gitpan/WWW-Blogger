@@ -16,7 +16,7 @@ my $param =
    'NAME' => 'WWW-Blogger',
    'CPANID' => 'ERMEYERS',
    'AUTHOR' => 'Eric R. Meyers <Eric.R.Meyers@gmail.com>',
-   'VERSION' => '2008.0507',
+   'VERSION' => '2008.0605',
    'LICENSE' => 'perl',
    'ABSTRACT' => 'Interface to www.blogger.com',
 
