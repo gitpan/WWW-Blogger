@@ -11,7 +11,7 @@ use warnings;
 #my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0605 $ =~ /(\d+)\.(\d+)/);
+our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0619 $ =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -547,7 +547,7 @@ sub WWW::Blogger::XML::API::browse_by_blogid
 
    } ## end if
 
-   $request->uri( $WWW::YouTube::XML::API::url . "/feeds/${blogid}/posts/default/-$query" );
+   $request->uri( $WWW::Blogger::XML::API::url . "/feeds/${blogid}/posts/default/-$query" );
 
    return( $request );
 
