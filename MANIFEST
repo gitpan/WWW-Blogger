@@ -2,7 +2,6 @@ Build.PL
 COPYING
 INSTALL
 lib/WWW/Blogger.pm
-lib/WWW/Blogger/Com.pm
 lib/WWW/Blogger/ML.pm
 lib/WWW/Blogger/ML/API.pm
 lib/WWW/Blogger/XML.pm
@@ -15,5 +14,5 @@ public_keys/ERMEYERS2008.pub
 README
 t/test0.pl.t
 t/use_me/test0.pl.t
-blogger/blog/blog.plx
+blogger/demo/demo.plx
 SIGNATURE    Added here by Module::Build

@@ -11,7 +11,7 @@ use warnings;
 #my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0619 $ =~ /(\d+)\.(\d+)/);
+our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0623 $ =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -30,7 +30,7 @@ BEGIN {
 
 require WWW::Blogger::XML::API;
 
-require XML::TreeBuilder; ## XML::API::tree parser
+require XML::TreeBuilder;
 
 require XML::Dumper;
 

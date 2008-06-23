@@ -9,7 +9,7 @@ use warnings;
 ##my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0619 $ =~ /(\d+)\.(\d+)/);
+our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0623 $ =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -66,7 +66,7 @@ __END__
 
 =head1 NAME
 
-B<blogger/blog/blog.plx> - Blogger Developers Interface, XML API demo.
+B<blogger/demo/demo.plx> - Blogger Developers Interface, XML API demo.
 
 =head1 SYNOPSIS
 
@@ -76,7 +76,7 @@ B<blogger/blog/blog.plx> - Blogger Developers Interface, XML API demo.
 
 B<$ mkdir> ~/blogger
 
-B<$ mkdir> ~/blogger/blog
+B<$ mkdir> ~/blogger/demo
 
 =item Options;
 
@@ -106,7 +106,7 @@ Blogger XML API demo for initial testing, training and your own WWW::Blogger Dev
 
 =head1 SEE ALSO
 
-I<L<WWW::Blogger>> I<L<WWW::Blogger::Com>> I<L<WWW::Blogger::ML>> I<L<WWW::Blogger::XML>> I<L<WWW::Blogger::HTML>>
+I<L<WWW::Blogger>> I<L<WWW::Blogger::ML>> I<L<WWW::Blogger::XML>>
 
 =head1 AUTHOR
 

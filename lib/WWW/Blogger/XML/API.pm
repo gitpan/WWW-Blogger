@@ -11,7 +11,7 @@ use warnings;
 #my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0619 $ =~ /(\d+)\.(\d+)/);
+our $VERSION=sprintf("%d.%04d", q$Revision: 2008.0623 $ =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -27,21 +27,17 @@ BEGIN {
 
 } ## end BEGIN
 
+require AppConfig::Std;
+
 require Net::Google::GData;
 
-require WWW::Blogger::Com; ## NOTE: I need WWW::Google secrets
-
 require WWW::Blogger::ML::API; ## NOTE: generic *ML
-
-require LWP::UserAgent; ## XML::API::ua (User Agent)
 
 require Data::Dumper; ## get rid of this
 
 require IO::File;
 
 require Date::Format;
-
-$WWW::Blogger::XML::API::url = 'https://www.blogger.com';
 
 __PACKAGE__ =~ m/^(WWW::[^:]+)::([^:]+)(::([^:]+)){0,1}$/;
 
@@ -110,15 +106,48 @@ push( @WWW::Blogger::XML::API::EXPORT_OK,
 ## NOTE: Getopts hasn't set the options yet. (all flags = 0 right now)
 ##
 
-$WWW::Blogger::XML::API::ua = LWP::UserAgent->new();
+$WWW::Blogger::XML::API::url = 'https://www.blogger.com';
 
-$WWW::Blogger::XML::API::gdi = Net::Google::GData->new(
-                                                          'service' => 'blogger',
-                                                          'Email'   => $WWW::Blogger::Com::user,
-                                                          'Passwd'  => $WWW::Blogger::Com::pass,
-                                                       );
+$WWW::Blogger::XML::API::config = AppConfig::Std->new();
 
-$WWW::Blogger::XML::API::gdi->login();
+$WWW::Blogger::XML::API::config_file = File::Spec->catfile( $ENV{'HOME'}, '.www_blogger_rc' );
+
+$WWW::Blogger::XML::API::config->define( 'username', { EXPAND   => 0 } );
+$WWW::Blogger::XML::API::config->define( 'password', { EXPAND   => 0 } );
+
+if ( ! -e $WWW::Blogger::XML::API::config_file )
+{
+   system( "echo 'username = ' > $WWW::Blogger::XML::API::config_file" );
+   system( "echo 'password = ' >> $WWW::Blogger::XML::API::config_file" );
+
+} ## end if
+
+if ( -e $WWW::Blogger::XML::API::config_file &&
+     ( ( ( stat( $WWW::Blogger::XML::API::config_file ) )[2] & 36 ) != 0 )
+   )
+{
+   die "Your config file $WWW::Blogger::XML::API::config_file is readable by others!\n";
+
+} ## end if
+
+if ( -f $WWW::Blogger::XML::API::config_file )
+{
+   $WWW::Blogger::XML::API::config->file( $WWW::Blogger::XML::API::config_file )
+   || die "reading $WWW::Blogger::XML::API::config_file\n";
+
+} ## end if
+
+##debug##printf( "username='%s'\n", $WWW::Blogger::XML::API::config->username() );
+##debug##printf( "password='%s'\n", $WWW::Blogger::XML::API::config->password() );
+
+$WWW::Blogger::XML::API::gdi = Net::Google::GData->new( 'service' => 'blogger',
+                                  'Email'  => $WWW::Blogger::XML::API::config->username(),
+                                  'Passwd' => $WWW::Blogger::XML::API::config->password(),
+                                                      );
+
+$WWW::Blogger::XML::API::gdi->login() || die "login failed: ".$WWW::Blogger::XML::API::gdi->errstr()."\n";
+
+$WWW::Blogger::XML::API::ua = $WWW::Blogger::XML::API::gdi->_ua();
 
 END {
 
@@ -198,8 +227,6 @@ sub WWW::Blogger::XML::API::ua_request
    my $request = shift;
 
    my $result = undef;
-
-   $request->header( 'Authorization' => 'GoogleLogin auth=' . $WWW::Blogger::XML::API::gdi->_auth() );
 
    my $ua_info = 'sprintf( "WWW::Blogger::XML::API::ua_request failed: %s \$itry=%dof%d\n",
                             $result->status_line(), $itry-1, $max_try
@@ -563,7 +590,7 @@ sub WWW::Blogger::XML::API::search_by_blogid
 
    my $request = HTTP::Request->new();
 
-   my $uri = URI->new( $WWW::YouTube::XML::API::url . '/feeds/${blogid}/posts/default' );
+   my $uri = URI->new( $WWW::Blogger::XML::API::url . '/feeds/${blogid}/posts/default' );
 
    $uri->query_form( @query );
 
