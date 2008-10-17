@@ -16,7 +16,7 @@ my $param =
    'NAME' => 'WWW-Blogger',
    'CPANID' => 'ERMEYERS',
    'AUTHOR' => 'Eric R. Meyers <Eric.R.Meyers@gmail.com>',
-   'VERSION' => '2008.0623',
+   'VERSION' => '2008.1017',
    'LICENSE' => 'perl',
    'ABSTRACT' => 'Interface to www.blogger.com',
 
@@ -38,9 +38,17 @@ my $build = Module::Build->new
       },
       'requires' =>
       {
-         'perl' => '5.6.1',
-         'HTTP::Cookies' => 0,
-         'LWP::UserAgent' => 0,
+         'perl' => '>= 5.8.0',
+         'AppConfig::Std' => 0,
+         'Data::Dumper' => 0,
+         'Date::Format' => 0,
+         'File::Basename' => 0,
+         'FindBin' => 0,
+         'LWP::UserAgent' => '>= 2.032',
+         'Net::Google::GData' => 0,
+         'XML::TreeBuilder' => 0,
+         'XML::Dumper' => 0,
+         'XML::Atom::Syndication' => 0,
 
       },
       'recommends' =>
@@ -68,15 +76,14 @@ if ( -d "./_bin" ) ## won't exist in distribution
    $build->dispatch( 'test', 'verbose' => 1 );
    $build->dispatch( 'install' );
 
-   ##debug##
-   gpg_me();
+   ##debug## gpg_me();
 
 }
 else
 {
-   print "##\n## Thanks to Audrey Tang, for being the first person to send me an encryption.\n##\n";
+   #print "##\n## Thanks to Audrey Tang, for being the first person to send me an encryption.\n##\n";
 
-   gpg_me();
+   #gpg_me();
 
    print "Now, please enter 'Build' to make all, 'Build test' to test, and 'Build install' to install.\n";
 

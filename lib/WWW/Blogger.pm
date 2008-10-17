@@ -11,7 +11,7 @@ use warnings;
 #my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION = sprintf("%d.%04d", "Revision: 2008.0623" =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%04d", "Revision: 2008.1017" =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -127,8 +127,6 @@ B<WWW::Blogger> - Blogger Development Interface (BDI)
 
 =head1 SYNOPSIS
 
-B<use lib ( $ENV{'HOME'} );>
-
 B<use WWW::Blogger;>
 
 =head1 OPTIONS
@@ -137,13 +135,9 @@ B<use WWW::Blogger;>
 
 B<WWW::Blogger> is the I<Public> I<Blogger Development Interface> (BDI).
 
-B<L<WWW::Blogger::Com>> is your I<Private> Blogger Developer's Interface.
-
-We need your private B<user and pass> defined here.
-
 =head1 SEE ALSO
 
-I<L<WWW::Blogger::Com>> I<L<WWW::Blogger::ML>> I<L<WWW::Blogger::XML>>
+I<L<WWW::Blogger::ML>> I<L<WWW::Blogger::XML>>
 
 =head1 AUTHOR
 
