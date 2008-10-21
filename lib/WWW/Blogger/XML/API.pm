@@ -11,7 +11,7 @@ use warnings;
 #my $VERSION="0.1";
 
 #For CVS , use following line
-our $VERSION=sprintf("%d.%04d", q$Revision: 2008.1017 $ =~ /(\d+)\.(\d+)/);
+our $VERSION=sprintf("%d.%04d", q$Revision: 2008.1021 $ =~ /(\d+)\.(\d+)/);
 
 BEGIN {
 
@@ -140,14 +140,13 @@ if ( -f $WWW::Blogger::XML::API::config_file )
 ##debug##printf( "username='%s'\n", $WWW::Blogger::XML::API::config->username() );
 ##debug##printf( "password='%s'\n", $WWW::Blogger::XML::API::config->password() );
 
-$WWW::Blogger::XML::API::gdi = Net::Google::GData->new( 'service' => 'blogger',
-                                  'Email'  => $WWW::Blogger::XML::API::config->username(),
-                                  'Passwd' => $WWW::Blogger::XML::API::config->password(),
-                                                      );
+$WWW::Blogger::XML::API::gdi = undef;
 
-$WWW::Blogger::XML::API::gdi->login() || die "login failed: ".$WWW::Blogger::XML::API::gdi->errstr()."\n";
+$WWW::Blogger::XML::API::ua = undef;
 
-$WWW::Blogger::XML::API::ua = $WWW::Blogger::XML::API::gdi->_ua();
+WWW::Blogger::XML::API::set_account( $WWW::Blogger::XML::API::config->username(),
+                                     $WWW::Blogger::XML::API::config->password()
+                                   );
 
 END {
 
@@ -310,6 +309,24 @@ sub WWW::Blogger::XML::API::ua_request
 ##
 ##SELF##<link href="http://www.blogger.com/feeds/10829698745685235014/blogs/1538373143315425622"
 ##(get)       rel="self" type="application/atom+xml"></link>
+
+##
+## Set new account
+##
+sub WWW::Blogger::XML::API::set_account
+{
+   my ( $username, $password ) = @_;
+
+   $WWW::Blogger::XML::API::gdi = Net::Google::GData->new( 'service' => 'blogger',
+                                                           'Email'  => $username,
+                                                           'Passwd' => $password,
+                                                         );
+
+   $WWW::Blogger::XML::API::gdi->login() || die "login failed: ".$WWW::Blogger::XML::API::gdi->errstr()."\n";
+
+   $WWW::Blogger::XML::API::ua = $WWW::Blogger::XML::API::gdi->_ua();
+
+} ## end sub WWW::Blogger::XML::API::set_account
 
 ##
 ## Retrieving a list of blogs
@@ -647,6 +664,14 @@ See:	http://code.blogger.com
 =over
 
 WWW::Blogger::XML::demo()
+
+=back
+
+=head2  Setting a new account
+
+=over
+
+WWW::Blogger::XML::API::set_account( $username, $password );
 
 =back
 
